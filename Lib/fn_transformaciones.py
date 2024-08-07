@@ -81,6 +81,12 @@ def tx_recalcular_pendientes(df):
 
 # ------------------------------------------------------------------------------------------------------------
 def tx_binarizar_calificacion(df):
+    # Habilita el nuevo comportamiento de pandas para evitar FutureWarnings
+    # pandas ajustará automáticamente el tipo de datos de la columna resultante según las 
+    # reglas de inferencia actuales. En este caso, al reemplazar valores por booleanos, 
+    # la columna “DETERIORADO” debería ser de tipo booleano.
+    pd.set_option('future.no_silent_downcasting', True)
+
     df['DETERIORADO'] = df['CALIFICACION'].replace({1: False, 2: False, 3: False, 4: True, 5: True})
     return df
 
