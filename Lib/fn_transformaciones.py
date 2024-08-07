@@ -16,7 +16,10 @@ def tx_depurar_datos_nulos(df):
 
     # Columnas categoricas no requeridas se rellenan con N/D (No disponible)
     columnas_categoricas = df.select_dtypes(include=['object']).columns
-    df[columnas_categoricas] = df[columnas_categoricas].fillna('N/D')
+    
+    # df[columnas_categoricas] = df[columnas_categoricas].fillna('N/D') genera warning. cambio por df.loc
+    df.loc[:, columnas_categoricas] = df[columnas_categoricas].fillna('N/D')
+
 
     return df
 
