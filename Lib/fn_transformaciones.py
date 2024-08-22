@@ -6,6 +6,8 @@ from datetime import datetime
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from scipy.stats import chi2_contingency
 
+pd.set_option('future.no_silent_downcasting', True)
+
 # ------------------------------------------------------------------------------------------------------------
 def tx_depurar_datos_nulos(df):
     # Solo estas columnas ameritan borrado completo del registro si son nulas
@@ -153,47 +155,28 @@ def tx_reasignar_tipo_red(df):
 
     return df
 # ------------------------------------------------------------------------------------------------------------
+# Binarizar zona por ser solo dos categorias: Sur/Norte y otros
 def tx_reasignar_zonas(df):
-    reemplazo_zonas = {
-        'SUR ALCANTARILLADO'   : 'SUR',
-        'NORTE ALCANTARILLADO' : 'NORTE Y OTRAS',
-    }
-
-    df['ZONA'] = np.where(
-        df['ZONA'].isin(reemplazo_zonas.keys()),
-        df['ZONA'].map(reemplazo_zonas),
-        'NORTE Y OTRAS'
-    )
-
+    df['ZONA_SUR'] = df['ZONA'].map({'SUR ALCANTARILLADO' : True}).fillna(False).astype(bool)    
     return df
 
 # ------------------------------------------------------------------------------------------------------------
+# Binarizar municipio por ser solo dos categorias: MEDELLIN/Otros
 def tx_reasignar_municipios(df):
-    reemplazo_municipio = {
-        'MEDELLÍN' : 'MEDELLÍN',
-    }
-
-    df['MUNICIPIO'] = np.where(
-        df['MUNICIPIO'].isin(reemplazo_municipio.keys()),
-        df['MUNICIPIO'].map(reemplazo_municipio),
-        'OTRO'
-    )
-
+    df['MUNICIPIO_MEDELLIN'] = df['MUNICIPIO'].map({'MEDELLÍN' : True}).fillna(False).astype(bool)    
     return df
 
 # ------------------------------------------------------------------------------------------------------------
+# Binarizar estado por ser solo dos categorias (OPERACION/Otros)
 def tx_reasignar_estados(df):
-    reemplazo_estado = {
-        'OPERACION' : 'OPERACION',
-    }
-
-    df['ESTADO'] = np.where(
-        df['ESTADO'].isin(reemplazo_estado.keys()),
-        df['ESTADO'].map(reemplazo_estado),
-        'OTRO'
-    )
+    df['ESTADO_OPERACION'] = df['ESTADO'].map({'OPERACION': True}).fillna(False).astype(bool)
     return df
-    
+
+# ------------------------------------------------------------------------------------------------------------
+def tx_reasignar_arranque(df):
+    df['ARRANQUE'] = df['ARRANQUE'].map({'SI': True}).fillna(False).astype(bool)
+    return df
+
 # ------------------------------------------------------------------------------------------------------------
 def tx_normalizar_numericas(df):
     columnas_numericas = df.select_dtypes(include=['int', 'float']).columns
@@ -220,9 +203,9 @@ def tx_seleccionar_columnas(df):
         'FABRICANTE',
         'ARRANQUE',
         #'CAMARA_CAI', # eliminada
-        'ZONA',
-        'MUNICIPIO',
-        'ESTADO',
+        'ZONA_SUR',
+        'MUNICIPIO_MEDELLIN',
+        'ESTADO_OPERACION',
     ]
 
     return df[columnnas_utiles]
@@ -240,6 +223,7 @@ def tx_aplicar_transformaciones(df):
         'Validar rango de datos      ' : tx_validar_rango_datos,
         'Unificar unidades a metros  ' : tx_unificar_unidades,
         #'Reasignar tipo de red       ' : tx_reasignar_tipo_red, # columna eliminada
+        'Reasignar arranque          ' : tx_reasignar_arranque,
         'Reasignar tipo de agua      ' : tx_reasignar_tipo_agua,
         'Reasignar materiales        ' : tx_reasignar_materiales,
         'Reasignar fabricantes       ' : tx_reasignar_fabricantes,
