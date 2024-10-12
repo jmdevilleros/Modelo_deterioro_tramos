@@ -1,7 +1,7 @@
 *************************************************************************
 # Modelo  para predicción de deterioro en tramos de tubería
 
-### Version alterna 02
+### v3.0
 
-Ensayos con MLP y XGBOOST
+Actualización de datos de CCTV
 *************************************************************************
