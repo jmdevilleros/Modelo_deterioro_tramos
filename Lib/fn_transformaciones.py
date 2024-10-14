@@ -239,7 +239,7 @@ def tx_aplicar_transformaciones(df):
         'Seleccionar columnas útiles ' : tx_seleccionar_columnas,
 
         # Transformaciones de estandarización
-        #'Normalizar numéricas        ' : tx_normalizar_numericas,
+        'Normalizar numéricas        ' : tx_normalizar_numericas,
     }
 
     df_transformado = df.copy()
